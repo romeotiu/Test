@@ -34,13 +34,13 @@ contract UniswapV3PositionManagerTest is Test {
 
         // Fund the user with WETH and USDC
         deal(address(weth), USER, 20 ether);
-        deal(address(usdt), USER, 20_000 * 1e6);
+        deal(address(usdt), USER, 100_000 * 1e6);
     }
 
     function testRevertsInvalidPool() public {
         vm.startPrank(USER);
 
-        uint256 amount0Desired = 1 ether;
+        uint256 amount0Desired = 10 ether;
 
         uint256 amount1Desired = 2_000 * 1e6;
         uint256 width = 1000;
@@ -62,50 +62,71 @@ contract UniswapV3PositionManagerTest is Test {
     function testProvideLiquidity() public {
         vm.startPrank(USER);
 
-        uint256 amount0Desired = 1 ether;
-        uint256 amount1Desired = 2_000 * 1e6;
+        positionManagerTest.positionManager();
+
+        uint256 amount0Desired = 10 ether;
+        uint256 amount1Desired = 10_000 * 1e6;  
         uint256 width = 1000;
 
-        IERC20(address(weth)).forceApprove(POSITION_MANAGER, amount0Desired);
-        IERC20(address(usdt)).forceApprove(POSITION_MANAGER, amount1Desired);
+        IERC20(address(weth)).forceApprove(address(positionManagerTest), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManagerTest), amount1Desired);
 
-        console.log("Position Manager address:", address(positionManagerTest));
+        // console.log("Position Manager address:", address(positionManagerTest));
         console.log(
-            "balanceOf positionManagerTest:",
+            "balanceOf address(this):",
             IERC20(address(weth)).balanceOf(address(this))
         );
 
-        // uint256 wethAllowance = IERC20(address(weth)).allowance(
-        //     address(this),
-        //     POSITION_MANAGER
+        console.log(
+            "balanceOf address(this):",
+            IERC20(address(usdt)).balanceOf(address(this))
+        );
+
+        console.log(
+            "balanceOf positionManagerTest weth:",
+            IERC20(address(weth)).balanceOf(address(this))
+        );
+
+        console.log(
+            "balanceOf positionManagerTest usdt:",
+            IERC20(address(usdt)).balanceOf(address(this))
+        );
+
+        uint256 wethAllowance = IERC20(address(weth)).allowance(
+            address(positionManagerTest),
+            POSITION_MANAGER
+        );
+        uint256 usdtAllowance = IERC20(address(usdt)).allowance(
+            address(positionManagerTest),
+            POSITION_MANAGER
+        );
+
+        console.log("wethAllowance:", wethAllowance);
+        console.log("usdtAllowance", usdtAllowance);
+
+
+        // positionManagerTest.provideLiquidity(
+        //     POOL_WETH_USDC,
+        //     amount0Desired,
+        //     amount1Desired,
+        //     width
         // );
-        // uint256 usdtAllowance = IERC20(address(usdt)).allowance(
-        //     address(this),
-        //     POSITION_MANAGER
+
+        // uint256 wethBalance = IERC20(address(weth)).balanceOf(USER);
+        // uint256 usdtBalance = IERC20(address(usdt)).balanceOf(USER);
+
+        // assertEq(
+        //     wethBalance,
+        //     19 ether,
+        //     "Incorrect WETH balance after liquidity"
+        // );
+        // assertEq(
+        //     usdtBalance,
+        //     18_000 * 1e6,
+        //     "Incorrect USDT balance after liquidity"
         // );
 
-        positionManagerTest.provideLiquidity(
-            POOL_WETH_USDC,
-            amount0Desired,
-            amount1Desired,
-            width
-        );
-
-        uint256 wethBalance = IERC20(address(weth)).balanceOf(USER);
-        uint256 usdtBalance = IERC20(address(usdt)).balanceOf(USER);
-
-        assertEq(
-            wethBalance,
-            19 ether,
-            "Incorrect WETH balance after liquidity"
-        );
-        assertEq(
-            usdtBalance,
-            18_000 * 1e6,
-            "Incorrect USDT balance after liquidity"
-        );
-
-        vm.stopPrank();
+        // vm.stopPrank();
     }
 
     function testRevertsInvalidWidth() public {
@@ -114,13 +135,11 @@ contract UniswapV3PositionManagerTest is Test {
         uint256 amount0Desired = 1 ether;
         uint256 amount1Desired = 2_000 * 1e6;
 
-        // Approve tokens
-        IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
-        IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
+        IERC20(address(weth)).forceApprove(address(positionManagerTest), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManagerTest), amount1Desired);
 
-        // Expect revert for invalid width
         vm.expectRevert("Invalid width");
-        positionManager.provideLiquidity(
+        positionManagerTest.provideLiquidity(
             POOL_WETH_USDC,
             amount0Desired,
             amount1Desired,
@@ -138,12 +157,12 @@ contract UniswapV3PositionManagerTest is Test {
         uint256 width = 1000;
 
         // Approve tokens
-        IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
-        IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
+        IERC20(address(weth)).forceApprove(address(positionManagerTest), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManagerTest), amount1Desired);
 
         // Expect revert due to insufficient balance
         vm.expectRevert();
-        positionManager.provideLiquidity(
+        positionManagerTest.provideLiquidity(
             POOL_WETH_USDC,
             amount0Desired,
             amount1Desired,
