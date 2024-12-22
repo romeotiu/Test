@@ -37,27 +37,27 @@ contract UniswapV3PositionManagerTest is Test {
         deal(address(usdt), USER, 20_000 * 1e6);
     }
 
-    // function testRevertsInvalidPool() public {
-    //     vm.startPrank(USER);
+    function testRevertsInvalidPool() public {
+        vm.startPrank(USER);
 
-    //     uint256 amount0Desired = 1 ether;
+        uint256 amount0Desired = 1 ether;
 
-    //     uint256 amount1Desired = 2_000 * 1e6;
-    //     uint256 width = 1000;
+        uint256 amount1Desired = 2_000 * 1e6;
+        uint256 width = 1000;
 
-    //     IERC20(address(weth)).forceApprove(address(positionManagerTest), amount0Desired);
-    //     IERC20(address(usdt)).forceApprove(address(positionManagerTest), amount1Desired);
+        IERC20(address(weth)).forceApprove(address(positionManagerTest), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManagerTest), amount1Desired);
 
-    //     vm.expectRevert("Invalid pool address");
-    //     positionManagerTest.provideLiquidity(
-    //         address(0),
-    //         amount0Desired,
-    //         amount1Desired,
-    //         width
-    //     );
+        vm.expectRevert("Invalid pool address");
+        positionManagerTest.provideLiquidity(
+            address(0),
+            amount0Desired,
+            amount1Desired,
+            width
+        );
 
-    //     vm.stopPrank();
-    // }
+        vm.stopPrank();
+    }
 
     function testProvideLiquidity() public {
         vm.startPrank(USER);
@@ -108,48 +108,48 @@ contract UniswapV3PositionManagerTest is Test {
         vm.stopPrank();
     }
 
-    // function testRevertsInvalidWidth() public {
-    //     vm.startPrank(USER);
+    function testRevertsInvalidWidth() public {
+        vm.startPrank(USER);
 
-    //     uint256 amount0Desired = 1 ether;
-    //     uint256 amount1Desired = 2_000 * 1e6;
+        uint256 amount0Desired = 1 ether;
+        uint256 amount1Desired = 2_000 * 1e6;
 
-    //     // Approve tokens
-    //     IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
-    //     IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
+        // Approve tokens
+        IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
 
-    //     // Expect revert for invalid width
-    //     vm.expectRevert("Invalid width");
-    //     positionManager.provideLiquidity(
-    //         POOL_WETH_USDC,
-    //         amount0Desired,
-    //         amount1Desired,
-    //         0
-    //     );
+        // Expect revert for invalid width
+        vm.expectRevert("Invalid width");
+        positionManager.provideLiquidity(
+            POOL_WETH_USDC,
+            amount0Desired,
+            amount1Desired,
+            0
+        );
 
-    //     vm.stopPrank();
-    // }
+        vm.stopPrank();
+    }
 
-    // function testRevertsInsufficientLiquidity() public {
-    //     vm.startPrank(USER);
+    function testRevertsInsufficientLiquidity() public {
+        vm.startPrank(USER);
 
-    //     uint256 amount0Desired = 1 ether;
-    //     uint256 amount1Desired = 20_000 * 1e6; // Exceeds balance
-    //     uint256 width = 1000;
+        uint256 amount0Desired = 1 ether;
+        uint256 amount1Desired = 20_000 * 1e6; // Exceeds balance
+        uint256 width = 1000;
 
-    //     // Approve tokens
-    //     IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
-    //     IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
+        // Approve tokens
+        IERC20(address(weth)).forceApprove(address(positionManager), amount0Desired);
+        IERC20(address(usdt)).forceApprove(address(positionManager), amount1Desired);
 
-    //     // Expect revert due to insufficient balance
-    //     vm.expectRevert();
-    //     positionManager.provideLiquidity(
-    //         POOL_WETH_USDC,
-    //         amount0Desired,
-    //         amount1Desired,
-    //         width
-    //     );
+        // Expect revert due to insufficient balance
+        vm.expectRevert();
+        positionManager.provideLiquidity(
+            POOL_WETH_USDC,
+            amount0Desired,
+            amount1Desired,
+            width
+        );
 
-    //     vm.stopPrank();
-    // }
+        vm.stopPrank();
+    }
 }
